@@ -29,6 +29,8 @@ from .const import (
     DEFAULT_SENSOR_PORT_TRACKER,
     CONF_SENSOR_NETWATCH_TRACKER,
     DEFAULT_SENSOR_NETWATCH_TRACKER,
+    CONF_SENSOR_QUEUE_TYPE,
+    DEFAULT_SENSOR_QUEUE_TYPE,
 )
 from .coordinator import MikrotikCoordinator, MikrotikTrackerCoordinator
 from .helper import format_attribute
@@ -75,6 +77,11 @@ def _skip_sensor(config_entry, entity_description, data, uid) -> bool:
 
     if entity_description.data_path == "netwatch" and not config_entry.options.get(
         CONF_SENSOR_NETWATCH_TRACKER, DEFAULT_SENSOR_NETWATCH_TRACKER
+    ):
+        return True
+
+    if entity_description.data_path == "queue_type" and not config_entry.options.get(
+        CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
     ):
         return True
 
