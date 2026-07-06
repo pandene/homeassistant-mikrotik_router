@@ -279,6 +279,44 @@ def fill_vals(data, entry, uid, vals) -> dict:
                     entry, _source, default=_default, reverse=_reverse
                 )
 
+        elif _type == "int":
+            _default = val["default"] if "default" in val else 0
+
+            if uid:
+                data[uid][_name] = from_entry(entry, _source, default=_default)
+            else:
+                data[_name] = from_entry(entry, _source, default=_default)
+
+            try:
+                if uid:
+                    data[uid][_name] = int(data[uid][_name])
+                else:
+                    data[_name] = int(data[_name])
+            except (ValueError, TypeError):
+                if uid:
+                    data[uid][_name] = _default
+                else:
+                    data[_name] = _default
+
+        elif _type == "float":
+            _default = val["default"] if "default" in val else 0.0
+
+            if uid:
+                data[uid][_name] = from_entry(entry, _source, default=_default)
+            else:
+                data[_name] = from_entry(entry, _source, default=_default)
+
+            try:
+                if uid:
+                    data[uid][_name] = float(data[uid][_name])
+                else:
+                    data[_name] = float(data[_name])
+            except (ValueError, TypeError):
+                if uid:
+                    data[uid][_name] = _default
+                else:
+                    data[_name] = _default
+
         if _convert == "utc_from_timestamp":
             if uid:
                 if isinstance(data[uid][_name], int) and data[uid][_name] > 0:
