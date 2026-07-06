@@ -102,6 +102,11 @@ DEVICE_ATTRIBUTES_CLIENT_TRAFFIC = [
     "authorized",
     "bypassed",
 ]
+DEVICE_ATTRIBUTES_LTE = [
+    "current-operator", "enb-id", "sector-id", "current-cellid", "phy-cellid",
+    "primary-band", "earfcn", "rssi", "rsrp", "rsrq", "sinr", "cqi",
+]
+
 DEVICE_ATTRIBUTES_GPS = [
     "valid",
     "latitude",
