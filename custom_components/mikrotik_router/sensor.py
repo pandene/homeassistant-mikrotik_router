@@ -23,6 +23,7 @@ from .sensor_types import (
     DEVICE_ATTRIBUTES_IFACE_ETHER,
     DEVICE_ATTRIBUTES_IFACE_SFP,
     DEVICE_ATTRIBUTES_IFACE_WIRELESS,
+    DEVICE_ATTRIBUTES_LTE,
 )
 
 _LOGGER = getLogger(__name__)
@@ -104,6 +105,11 @@ class MikrotikInterfaceTrafficSensor(MikrotikSensor):
 
         elif self._data["type"] == "wlan":
             for variable in DEVICE_ATTRIBUTES_IFACE_WIRELESS:
+                if variable in self._data:
+                    attributes[format_attribute(variable)] = self._data[variable]
+
+        elif self._data["type"] == "lte":
+            for variable in DEVICE_ATTRIBUTES_LTE:
                 if variable in self._data:
                     attributes[format_attribute(variable)] = self._data[variable]
 

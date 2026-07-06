@@ -899,6 +899,48 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
                         ],
                     )
 
+            if self.ds["interface"][uid]["type"] == "lte":
+                lte_monitor = self.api.query(
+                    "/interface/lte",
+                    command="monitor",
+                    args={".id": vals[".id"], "once": True},
+                )
+                if lte_monitor and len(lte_monitor) > 0:
+                    _LOGGER.debug(
+                        "Mikrotik %s LTE monitor data for %s: %s",
+                        self.host, uid, lte_monitor[0],
+                    )
+                    lte_entry = lte_monitor[0]
+                    for field, field_type, default in [
+                        ("current-operator", "str", "unknown"),
+                        ("enb-id", "int", 0),
+                        ("sector-id", "str", "unknown"),
+                        ("current-cellid", "str", "unknown"),
+                        ("phy-cellid", "int", 0),
+                        ("primary-band", "str", "unknown"),
+                        ("earfcn", "int", 0),
+                        ("rssi", "int", 0),
+                        ("rsrp", "int", 0),
+                        ("rsrq", "float", 0.0),
+                        ("sinr", "float", 0.0),
+                        ("cqi", "int", 0),
+                    ]:
+                        raw = lte_entry.get(field, default)
+                        try:
+                            if field_type == "int":
+                                self.ds["interface"][uid][field] = int(raw)
+                            elif field_type == "float":
+                                self.ds["interface"][uid][field] = float(raw)
+                            else:
+                                self.ds["interface"][uid][field] = str(raw)
+                        except (ValueError, TypeError):
+                            self.ds["interface"][uid][field] = default
+                else:
+                    _LOGGER.warning(
+                        "Mikrotik %s LTE monitor returned no data for %s (.id=%s)",
+                        self.host, uid, vals[".id"],
+                    )
+
         if bonding:
             self.ds["bonding"] = parse_api(
                 data={},

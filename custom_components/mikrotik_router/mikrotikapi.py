@@ -339,7 +339,10 @@ class MikrotikAPI:
             try:
                 response = list(response(command, **args))
             except Exception as e:
-                self.disconnect("path", e)
+                _LOGGER.warning(
+                    "Mikrotik %s error executing %s %s: %s",
+                    self._host, path, command, e
+                )
                 self.lock.release()
                 return None
 
