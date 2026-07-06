@@ -65,6 +65,8 @@ from .const import (
     CONF_SENSOR_NETWATCH_TRACKER,
     CONF_SENSOR_ROUTE,
     DEFAULT_SENSOR_ROUTE,
+    CONF_SENSOR_QUEUE_TYPE,
+    DEFAULT_SENSOR_QUEUE_TYPE,
 )
 from .mikrotikapi import MikrotikAPI
 
@@ -320,6 +322,12 @@ class MikrotikControllerOptionsFlowHandler(OptionsFlow):
                         CONF_SENSOR_ROUTE,
                         default=self._config_entry.options.get(
                             CONF_SENSOR_ROUTE, DEFAULT_SENSOR_ROUTE
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSOR_QUEUE_TYPE,
+                        default=self._config_entry.options.get(
+                            CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
                         ),
                     ): bool,
                 },
