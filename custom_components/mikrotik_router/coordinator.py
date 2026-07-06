@@ -65,6 +65,8 @@ from .const import (
     DEFAULT_SENSOR_ENVIRONMENT,
     CONF_SENSOR_NETWATCH_TRACKER,
     DEFAULT_SENSOR_NETWATCH_TRACKER,
+    CONF_SENSOR_ROUTE,
+    DEFAULT_SENSOR_ROUTE,
 )
 from .apiparser import parse_api
 from .mikrotikapi import MikrotikAPI
@@ -266,6 +268,7 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
             "ups": {},
             "gps": {},
             "netwatch": {},
+            "route": {},
         }
 
         self.notified_flags = []
@@ -396,6 +399,14 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
         return self.config_entry.options.get(
             CONF_SENSOR_KIDCONTROL, DEFAULT_SENSOR_KIDCONTROL
         )
+
+    # ---------------------------
+    #   option_sensor_route
+    # ---------------------------
+    @property
+    def option_sensor_route(self):
+        """Config entry option for route sensors."""
+        return self.config_entry.options.get(CONF_SENSOR_ROUTE, DEFAULT_SENSOR_ROUTE)
 
     # ---------------------------
     #   option_sensor_netwatch
@@ -641,6 +652,9 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
 
         if self.api.connected() and self.option_sensor_nat:
             await self.hass.async_add_executor_job(self.get_nat)
+
+        if self.api.connected() and self.option_sensor_route:
+            await self.hass.async_add_executor_job(self.get_route)
 
         if self.api.connected() and self.option_sensor_kidcontrol:
             await self.hass.async_add_executor_job(self.get_kidcontrol)
@@ -988,6 +1002,31 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
 
             if self.ds["interface"][uid]["client-mac-address"] == "":
                 self.ds["interface"][uid]["client-mac-address"] = "none"
+
+    # ---------------------------
+    #   get_route
+    # ---------------------------
+    def get_route(self) -> None:
+        """Get route data from Mikrotik"""
+        self.ds["route"] = parse_api(
+            data=self.ds["route"],
+            source=self.api.query("/ip/route"),
+            key=".id",
+            vals=[
+                {"name": ".id"},
+                {"name": "dst-address", "default": "unknown"},
+                {"name": "gateway", "default": "unknown"},
+                {"name": "distance", "default": 0, "type": "int"},
+                {"name": "routing-table", "default": ""},
+                {"name": "pref-src", "default": ""},
+                {"name": "scope", "default": 30, "type": "int"},
+                {"name": "target-scope", "default": 30, "type": "int"},
+                {"name": "comment", "default": ""},
+                {"name": "disabled", "default": False, "type": "bool"},
+                {"name": "dynamic", "default": False, "type": "bool"},
+                {"name": "active", "default": False, "type": "bool"},
+            ],
+        )
 
     # ---------------------------
     #   get_nat
