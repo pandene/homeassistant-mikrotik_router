@@ -101,6 +101,8 @@ DEVICE_ATTRIBUTES_MANGLE = [
     "dst-address",
     "dst-port",
     "comment",
+    "new-routing-mark",
+    "src-mac-address",
 ]
 
 DEVICE_ATTRIBUTES_FILTER = [
