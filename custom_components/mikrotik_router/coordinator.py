@@ -1092,6 +1092,8 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
                 {"name": "dst-port", "default": "any"},
                 {"name": "src-address-list", "default": "any"},
                 {"name": "dst-address-list", "default": "any"},
+                {"name": "new-routing-mark", "default": ""},
+                {"name": "src-mac-address", "default": ""},
                 {
                     "name": "enabled",
                     "source": "disabled",
@@ -1120,6 +1122,12 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
                     {"key": "src-address-list"},
                     {"text": "-"},
                     {"key": "dst-address-list"},
+                    {"text": ","},
+                    {"key": "comment"},
+                    {"text": ","},
+                    {"key": "new-routing-mark"},
+                    {"text": ","},
+                    {"key": "src-mac-address"},
                 ],
                 [
                     {"name": "name"},
