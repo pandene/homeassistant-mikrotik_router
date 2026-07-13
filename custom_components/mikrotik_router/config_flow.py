@@ -63,6 +63,12 @@ from .const import (
     DEFAULT_VERIFY_SSL,
     DEFAULT_SENSOR_NETWATCH_TRACKER,
     CONF_SENSOR_NETWATCH_TRACKER,
+    CONF_SENSOR_ROUTE,
+    DEFAULT_SENSOR_ROUTE,
+    CONF_SENSOR_QUEUE_TYPE,
+    DEFAULT_SENSOR_QUEUE_TYPE,
+    CONF_SENSOR_QUEUE_TREE,
+    DEFAULT_SENSOR_QUEUE_TREE,
 )
 from .mikrotikapi import MikrotikAPI
 
@@ -312,6 +318,24 @@ class MikrotikControllerOptionsFlowHandler(OptionsFlow):
                         CONF_SENSOR_ENVIRONMENT,
                         default=self._config_entry.options.get(
                             CONF_SENSOR_ENVIRONMENT, DEFAULT_SENSOR_ENVIRONMENT
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSOR_ROUTE,
+                        default=self._config_entry.options.get(
+                            CONF_SENSOR_ROUTE, DEFAULT_SENSOR_ROUTE
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSOR_QUEUE_TYPE,
+                        default=self._config_entry.options.get(
+                            CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSOR_QUEUE_TREE,
+                        default=self._config_entry.options.get(
+                            CONF_SENSOR_QUEUE_TREE, DEFAULT_SENSOR_QUEUE_TREE
                         ),
                     ): bool,
                 },
