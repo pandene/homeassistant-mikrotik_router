@@ -65,6 +65,12 @@ from .const import (
     DEFAULT_SENSOR_ENVIRONMENT,
     CONF_SENSOR_NETWATCH_TRACKER,
     DEFAULT_SENSOR_NETWATCH_TRACKER,
+    CONF_SENSOR_ROUTE,
+    DEFAULT_SENSOR_ROUTE,
+    CONF_SENSOR_QUEUE_TYPE,
+    DEFAULT_SENSOR_QUEUE_TYPE,
+    CONF_SENSOR_QUEUE_TREE,
+    DEFAULT_SENSOR_QUEUE_TREE,
 )
 from .apiparser import parse_api
 from .mikrotikapi import MikrotikAPI
@@ -266,6 +272,9 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
             "ups": {},
             "gps": {},
             "netwatch": {},
+            "route": {},
+            "queue_type": {},
+            "queue_tree": {},
         }
 
         self.notified_flags = []
@@ -405,6 +414,26 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
         """Config entry option to not track ARP."""
         return self.config_entry.options.get(
             CONF_SENSOR_NETWATCH_TRACKER, DEFAULT_SENSOR_NETWATCH_TRACKER
+        )
+
+    # ---------------------------
+    #   option_sensor_queue_type
+    # ---------------------------
+    @property
+    def option_sensor_queue_type(self):
+        """Config entry option for queue type sensors."""
+        return self.config_entry.options.get(
+            CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
+        )
+
+    # ---------------------------
+    #   option_sensor_queue_tree
+    # ---------------------------
+    @property
+    def option_sensor_queue_tree(self):
+        """Config entry option for queue tree sensors."""
+        return self.config_entry.options.get(
+            CONF_SENSOR_QUEUE_TREE, DEFAULT_SENSOR_QUEUE_TREE
         )
 
     # ---------------------------
@@ -653,6 +682,12 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
 
         if self.api.connected() and self.option_sensor_netwatch:
             await self.hass.async_add_executor_job(self.get_netwatch)
+
+        if self.api.connected() and self.option_sensor_queue_type:
+            await self.hass.async_add_executor_job(self.get_queue_type)
+
+        if self.api.connected() and self.option_sensor_queue_tree:
+            await self.hass.async_add_executor_job(self.get_queue_tree)
 
         if self.api.connected() and self.support_ppp and self.option_sensor_ppp:
             await self.hass.async_add_executor_job(self.get_ppp)
@@ -1834,6 +1869,59 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
             upload_burst_time, download_burst_time = vals["burst-time"].split("/")
             self.ds["queue"][uid]["upload-burst-time"] = upload_burst_time
             self.ds["queue"][uid]["download-burst-time"] = download_burst_time
+
+    # ---------------------------
+    #   get_queue_type
+    # ---------------------------
+    def get_queue_type(self) -> None:
+        """Get Queue Type data from Mikrotik"""
+        self.ds["queue_type"] = parse_api(
+            data=self.ds["queue_type"],
+            source=self.api.query("/queue/type"),
+            key="name",
+            vals=[
+                {"name": "name", "default": "unknown"},
+                {"name": "kind", "default": "unknown"},
+                {"name": "pcq-rate", "default": "0"},
+                {"name": "pcq-classifier", "default": ""},
+            ],
+            only=[{"key": "kind", "value": "pcq"}],
+        )
+
+    # ---------------------------
+    #   get_queue_tree
+    # ---------------------------
+    def get_queue_tree(self) -> None:
+        """Get Queue Tree data from Mikrotik."""
+        self.ds["queue_tree"] = parse_api(
+            data=self.ds["queue_tree"],
+            source=self.api.query("/queue/tree"),
+            key="name",
+            vals=[
+                {"name": "name", "default": "unknown"},
+                {"name": "parent", "default": ""},
+                {"name": "packet-marks", "default": ""},
+                {"name": "bytes-current", "source": "bytes", "default": 0.0},
+                {"name": "disabled", "default": False, "type": "bool"},
+            ],
+            ensure_vals=[
+                {"name": "bytes-previous", "default": 0.0},
+                {"name": "bytes", "default": 0.0},
+                {"name": "bytes-total", "default": 0.0},
+            ],
+        )
+
+        if self.option_sensor_queue_tree:
+            for uid, vals in self.ds["queue_tree"].items():
+                current_bytes = vals["bytes-current"]
+                previous_bytes = vals["bytes-previous"] or current_bytes
+
+                delta_bytes = max(0, current_bytes - previous_bytes)
+                self.ds["queue_tree"][uid]["bytes"] = round(
+                    delta_bytes / self.option_scan_interval.seconds
+                )
+                self.ds["queue_tree"][uid]["bytes-previous"] = current_bytes
+                self.ds["queue_tree"][uid]["bytes-total"] = current_bytes
 
     # ---------------------------
     #   get_arp

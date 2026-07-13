@@ -29,6 +29,12 @@ from .const import (
     DEFAULT_SENSOR_PORT_TRACKER,
     CONF_SENSOR_NETWATCH_TRACKER,
     DEFAULT_SENSOR_NETWATCH_TRACKER,
+    CONF_SENSOR_ROUTE,
+    DEFAULT_SENSOR_ROUTE,
+    CONF_SENSOR_QUEUE_TYPE,
+    DEFAULT_SENSOR_QUEUE_TYPE,
+    CONF_SENSOR_QUEUE_TREE,
+    DEFAULT_SENSOR_QUEUE_TREE,
 )
 from .coordinator import MikrotikCoordinator, MikrotikTrackerCoordinator
 from .helper import format_attribute
@@ -78,6 +84,20 @@ def _skip_sensor(config_entry, entity_description, data, uid) -> bool:
     ):
         return True
 
+    if entity_description.data_path == "route" and not config_entry.options.get(
+        CONF_SENSOR_ROUTE, DEFAULT_SENSOR_ROUTE
+    ):
+        return True
+
+    if entity_description.data_path == "queue_type" and not config_entry.options.get(
+        CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
+    ):
+        return True
+
+    if entity_description.data_path == "queue_tree" and not config_entry.options.get(
+        CONF_SENSOR_QUEUE_TREE, DEFAULT_SENSOR_QUEUE_TREE
+    ):
+        return True
     # Device Tracker
     if (
         # Skip if host tracking is disabled
