@@ -67,6 +67,8 @@ from .const import (
     DEFAULT_SENSOR_ROUTE,
     CONF_SENSOR_QUEUE_TYPE,
     DEFAULT_SENSOR_QUEUE_TYPE,
+    CONF_SENSOR_QUEUE_TREE,
+    DEFAULT_SENSOR_QUEUE_TREE,
 )
 from .mikrotikapi import MikrotikAPI
 
@@ -328,6 +330,12 @@ class MikrotikControllerOptionsFlowHandler(OptionsFlow):
                         CONF_SENSOR_QUEUE_TYPE,
                         default=self._config_entry.options.get(
                             CONF_SENSOR_QUEUE_TYPE, DEFAULT_SENSOR_QUEUE_TYPE
+                        ),
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSOR_QUEUE_TREE,
+                        default=self._config_entry.options.get(
+                            CONF_SENSOR_QUEUE_TREE, DEFAULT_SENSOR_QUEUE_TREE
                         ),
                     ): bool,
                 },

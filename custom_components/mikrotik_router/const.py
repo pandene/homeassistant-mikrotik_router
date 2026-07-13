@@ -64,6 +64,8 @@ CONF_SENSOR_ROUTE = "sensor_route"
 DEFAULT_SENSOR_ROUTE = False
 CONF_SENSOR_QUEUE_TYPE = "sensor_queue_type"
 DEFAULT_SENSOR_QUEUE_TYPE = False
+CONF_SENSOR_QUEUE_TREE = "sensor_queue_tree"
+DEFAULT_SENSOR_QUEUE_TREE = False
 
 TO_REDACT = {
     "ip-address",
