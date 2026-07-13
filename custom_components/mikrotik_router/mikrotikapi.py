@@ -248,39 +248,47 @@ class MikrotikAPI:
     # ---------------------------
     def set_value(self, path, param, value, mod_param, mod_value) -> bool:
         """Modify a parameter"""
-        entry_found = None
-
         if not self.connection_check():
             return False
 
-        response = self.query(path, return_list=False)
-        if response is None:
+        self.lock.acquire()
+        try:
+            response = self._connection.path(path)
+        except Exception as e:
+            self.disconnect("set_value path", e)
+            self.lock.release()
             return False
 
-        for tmp in response:
-            if param not in tmp:
-                continue
+        if param == ".id":
+            entry_found = value
+        else:
+            try:
+                for tmp in response:
+                    if param not in tmp:
+                        continue
+                    if tmp[param] != value:
+                        continue
+                    entry_found = tmp[".id"]
+            except Exception as e:
+                self.disconnect("set_value search", e)
+                self.lock.release()
+                return False
 
-            if tmp[param] != value:
-                continue
-
-            entry_found = tmp[".id"]
-
-        if not entry_found:
-            _LOGGER.error(
-                "Mikrotik %s set_value parameter %s with value %s not found",
-                self._host,
-                param,
-                value,
-            )
-            return True
+            if not entry_found:
+                _LOGGER.error(
+                    "Mikrotik %s set_value parameter %s with value %s not found",
+                    self._host,
+                    param,
+                    value,
+                )
+                self.lock.release()
+                return True
 
         params = {".id": entry_found, mod_param: mod_value}
-        self.lock.acquire()
         try:
             response.update(**params)
         except Exception as e:
-            self.disconnect("set_value", e)
+            self.disconnect("set_value update", e)
             self.lock.release()
             return False
 

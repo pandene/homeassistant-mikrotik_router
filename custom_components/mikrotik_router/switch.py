@@ -246,12 +246,7 @@ class MikrotikMangleSwitch(MikrotikSwitch):
         param = ".id"
         value = None
         for uid in self.coordinator.data["mangle"]:
-            if self.coordinator.data["mangle"][uid]["uniq-id"] == (
-                f"{self._data['chain']},{self._data['action']},{self._data['protocol']},"
-                f"{self._data['src-address']}:{self._data['src-port']}-"
-                f"{self._data['dst-address']}:{self._data['dst-port']},"
-                f"{self._data['src-address-list']}-{self._data['dst-address-list']}"
-            ):
+            if self.coordinator.data["mangle"][uid]["uniq-id"] == self._data["uniq-id"]:
                 value = self.coordinator.data["mangle"][uid][".id"]
 
         mod_param = self.entity_description.data_switch_parameter
@@ -267,12 +262,7 @@ class MikrotikMangleSwitch(MikrotikSwitch):
         param = ".id"
         value = None
         for uid in self.coordinator.data["mangle"]:
-            if self.coordinator.data["mangle"][uid]["uniq-id"] == (
-                f"{self._data['chain']},{self._data['action']},{self._data['protocol']},"
-                f"{self._data['src-address']}:{self._data['src-port']}-"
-                f"{self._data['dst-address']}:{self._data['dst-port']},"
-                f"{self._data['src-address-list']}-{self._data['dst-address-list']}"
-            ):
+            if self.coordinator.data["mangle"][uid]["uniq-id"] == self._data["uniq-id"]:
                 value = self.coordinator.data["mangle"][uid][".id"]
 
         mod_param = self.entity_description.data_switch_parameter
