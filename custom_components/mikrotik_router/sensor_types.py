@@ -1014,8 +1014,6 @@ SENSOR_TYPES: tuple[MikrotikSensorEntityDescription, ...] = (
         data_uid="",
         data_reference="name",
     ),
-)
-
     MikrotikSensorEntityDescription(
         key="mangle_bytes",
         name="Forwarded",
