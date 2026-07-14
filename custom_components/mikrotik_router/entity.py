@@ -35,6 +35,8 @@ from .const import (
     DEFAULT_SENSOR_QUEUE_TYPE,
     CONF_SENSOR_QUEUE_TREE,
     DEFAULT_SENSOR_QUEUE_TREE,
+    CONF_SENSOR_MANGLE,
+    DEFAULT_SENSOR_MANGLE,
 )
 from .coordinator import MikrotikCoordinator, MikrotikTrackerCoordinator
 from .helper import format_attribute
@@ -96,6 +98,13 @@ def _skip_sensor(config_entry, entity_description, data, uid) -> bool:
 
     if entity_description.data_path == "queue_tree" and not config_entry.options.get(
         CONF_SENSOR_QUEUE_TREE, DEFAULT_SENSOR_QUEUE_TREE
+    ):
+        return True
+
+    if (
+        entity_description.data_path == "mangle"
+        and entity_description.data_attribute in ["bytes", "packets"]
+        and data[uid].get("new-packet-mark", "") == ""
     ):
         return True
     # Device Tracker

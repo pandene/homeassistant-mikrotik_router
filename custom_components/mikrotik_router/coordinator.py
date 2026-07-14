@@ -1207,6 +1207,9 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
                 {"name": "dst-address-list", "default": "any"},
                 {"name": "new-routing-mark", "default": ""},
                 {"name": "src-mac-address", "default": ""},
+                {"name": "new-packet-mark", "default": ""},
+                {"name": "bytes", "default": 0, "type": "int"},
+                {"name": "packets", "default": 0, "type": "int"},
                 {
                     "name": "enabled",
                     "source": "disabled",
@@ -1986,11 +1989,13 @@ class MikrotikCoordinator(DataUpdateCoordinator[None]):
                 {"name": "packet-marks", "default": ""},
                 {"name": "bytes-current", "source": "bytes", "default": 0.0},
                 {"name": "disabled", "default": False, "type": "bool"},
+                {"name": "dropped", "default": 0, "type": "int"},
             ],
             ensure_vals=[
                 {"name": "bytes-previous", "default": 0.0},
                 {"name": "bytes", "default": 0.0},
                 {"name": "bytes-total", "default": 0.0},
+                {"name": "dropped", "default": 0, "type": "int"},
             ],
         )
 
